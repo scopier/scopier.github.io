@@ -104,7 +104,7 @@
 <meta property="og:site_name" content="温故知新">
 <meta property="og:description" content="Hexo 是一个强大的博客系统， 其速度超快，部署极简，样式主题丰富，支持GitHub Flavored Markdown。 安装依赖：  Node.js (版本： 6.9版本及以上版本) Git  依赖安装完后，执行 12345678910111213141516171819$ npm version&amp;#123; &apos;hexo-site&apos;: &apos;0.0.0&apos;,  npm: &apos;6.7.0&apos;,  are">
 <meta property="og:locale" content="zh-CN">
-<meta property="og:updated_time" content="2019-06-05T15:42:33.359Z">
+<meta property="og:updated_time" content="2019-06-05T15:43:28.425Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Hexo初始化">
 <meta name="twitter:description" content="Hexo 是一个强大的博客系统， 其速度超快，部署极简，样式主题丰富，支持GitHub Flavored Markdown。 安装依赖：  Node.js (版本： 6.9版本及以上版本) Git  依赖安装完后，执行 12345678910111213141516171819$ npm version&amp;#123; &apos;hexo-site&apos;: &apos;0.0.0&apos;,  npm: &apos;6.7.0&apos;,  are">
@@ -361,7 +361,7 @@
                 
               
 
-              <time title="创建时间：2019-06-05 15:42:33" itemprop="dateCreated datePublished" datetime="2019-06-05T15:42:33Z">2019-06-05</time>
+              <time title="创建时间：2019-06-05 15:43:28" itemprop="dateCreated datePublished" datetime="2019-06-05T15:43:28Z">2019-06-05</time>
             
 
             
@@ -429,15 +429,16 @@
 <h3 id="生成静态文件"><a href="#生成静态文件" class="headerlink" title="生成静态文件"></a>生成静态文件</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo generate</span><br></pre></td></tr></table></figure>
 
 <h3 id="部署到远程"><a href="#部署到远程" class="headerlink" title="部署到远程"></a>部署到远程</h3><ol>
-<li>安装github发布工具</li>
-</ol>
+<li><p>安装github发布工具</p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ npm install hexo-deployer-git --save</span><br></pre></td></tr></table></figure>
-
-<ol start="2">
+</li>
 <li><p>修改project/_config.yml配置文件</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">deploy:</span><br><span class="line">  type: git</span><br><span class="line">  repo: &lt;repository url&gt; #https://bitbucket.org/JohnSmith/johnsmith.bitbucket.io</span><br><span class="line">  branch: [branch] #published</span><br><span class="line">  message: [message]</span><br></pre></td></tr></table></figure>
 </li>
-<li><p>发布笔记到GitHub  &gt; 文档内容修改后再次发布请执行 <code>hexo clean</code></p>
+<li><p>发布笔记到GitHub  </p>
+<blockquote>
+<p>文档内容修改后再次发布请执行 <code>hexo clean</code></p>
+</blockquote>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo clean &amp;&amp; hexo deploy</span><br></pre></td></tr></table></figure>
 
 </li>
