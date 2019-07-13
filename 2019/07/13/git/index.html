@@ -1,0 +1,828 @@
+<!DOCTYPE html>
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+<html class="theme-next muse use-motion" lang="zh-CN">
+<head><meta name="generator" content="Hexo 3.8.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2">
+
+<link rel="stylesheet" href="/css/main.css?v=7.1.2">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=7.1.2">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=7.1.2">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=7.1.2">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=7.1.2" color="#222">
+
+
+
+
+
+
+
+<script id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Muse',
+    version: '7.1.2',
+    sidebar: {"position":"left","display":"post","offset":12,"onmobile":false,"dimmer":false},
+    back2top: true,
+    back2top_sidebar: false,
+    fancybox: false,
+    fastclick: false,
+    lazyload: false,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+  
+
+
+
+
+  <meta name="description" content="在实际的开发工作中，基于Git的分布式工作流主要采用集中式工作流，但使用好还是遇到了很多问题，那本文从实际的工作场景出发去学习Git在日常工作中的主要用法，以及常见问题的解决。当然，Git本身是一个庞大的系统，一篇文章很难完全把Git说清楚，需要我们在实际的工作中不断深入和实践。  注： 文章内容摘抄自GIT-SCM, 这里只是作为个人笔记，想深入了解Git的全部，请转到GIT-SCM上查看，有中">
+<meta name="keywords" content="笔记">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Git工作实践">
+<meta property="og:url" content="http://yoursite.com/2019/07/13/git/index.html">
+<meta property="og:site_name" content="知其然，知其所以然">
+<meta property="og:description" content="在实际的开发工作中，基于Git的分布式工作流主要采用集中式工作流，但使用好还是遇到了很多问题，那本文从实际的工作场景出发去学习Git在日常工作中的主要用法，以及常见问题的解决。当然，Git本身是一个庞大的系统，一篇文章很难完全把Git说清楚，需要我们在实际的工作中不断深入和实践。  注： 文章内容摘抄自GIT-SCM, 这里只是作为个人笔记，想深入了解Git的全部，请转到GIT-SCM上查看，有中">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:updated_time" content="2019-07-13T13:12:13.033Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Git工作实践">
+<meta name="twitter:description" content="在实际的开发工作中，基于Git的分布式工作流主要采用集中式工作流，但使用好还是遇到了很多问题，那本文从实际的工作场景出发去学习Git在日常工作中的主要用法，以及常见问题的解决。当然，Git本身是一个庞大的系统，一篇文章很难完全把Git说清楚，需要我们在实际的工作中不断深入和实践。  注： 文章内容摘抄自GIT-SCM, 这里只是作为个人笔记，想深入了解Git的全部，请转到GIT-SCM上查看，有中">
+
+
+
+
+
+  
+  
+  <link rel="canonical" href="http://yoursite.com/2019/07/13/git/">
+
+
+
+<script id="page.configurations">
+  CONFIG.page = {
+    sidebar: "",
+  };
+</script>
+
+  <title>Git工作实践 | 知其然，知其所以然</title>
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .motion-element,
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-title { opacity: initial; }
+
+  .use-motion .logo,
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-CN">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">知其然，知其所以然</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+    
+      
+        <p class="site-subtitle">千举万变，其道一也。不离于宗，谓之天人。</p>
+      
+    
+    
+  </div>
+
+  <div class="site-nav-toggle">
+    <button aria-label="切换导航栏">
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  
+    <ul id="menu" class="menu">
+      
+        
+        
+        
+          
+          <li class="menu-item menu-item-home">
+
+    
+    
+    
+      
+    
+
+    
+
+    <a href="/" rel="section"><i class="menu-item-icon fa fa-fw fa-home"></i> <br>首页</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-archives">
+
+    
+    
+    
+      
+    
+
+    
+
+    <a href="/archives/" rel="section"><i class="menu-item-icon fa fa-fw fa-archive"></i> <br>归档</a>
+
+  </li>
+
+      
+      
+    </ul>
+  
+
+  
+    
+
+  
+
+  
+</nav>
+
+
+
+  
+
+
+
+</div>
+    </header>
+
+    
+  
+  
+
+  
+
+  <a href="https://github.com/scopier" class="github-corner" title="Follow me on GitHub" aria-label="Follow me on GitHub" rel="noopener" target="_blank"><svg width="80" height="80" viewbox="0 0 250 250" aria-hidden="true"><path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"/><path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2" fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"/><path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z" fill="currentColor" class="octo-body"/></svg></a>
+
+
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/07/13/git/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="孙艺豪">
+      <meta itemprop="description" content="千举万变，其道一也。不离于宗，谓之天人。">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="知其然，知其所以然">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">Git工作实践
+
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+
+              
+                
+              
+
+              <time title="创建时间：2019-07-13 13:12:13" itemprop="dateCreated datePublished" datetime="2019-07-13T13:12:13Z">2019-07-13</time>
+            
+
+            
+          </span>
+
+          
+
+          
+            
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>在实际的开发工作中，基于Git的分布式工作流主要采用集中式工作流，但使用好还是遇到了很多问题，那本文从实际的工作场景出发去学习Git在日常工作中的主要用法，以及常见问题的解决。当然，Git本身是一个庞大的系统，一篇文章很难完全把Git说清楚，需要我们在实际的工作中不断深入和实践。</p>
+<blockquote>
+<p>注： 文章内容摘抄自<a href="https://git-scm.com/book/zh" target="_blank" rel="noopener">GIT-SCM</a>, 这里只是作为个人笔记，想深入了解Git的全部，请转到GIT-SCM上查看，有中文版！！！</p>
+</blockquote>
+<h3 id="Git-命令安装"><a href="#Git-命令安装" class="headerlink" title="Git 命令安装"></a>Git 命令安装</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">$ <span class="comment"># 如果是ubuntu系统 </span></span><br><span class="line">$ sudo apt-get install git</span><br><span class="line"></span><br><span class="line">$ <span class="comment"># 如果是Centos系统</span></span><br><span class="line">$ sudo yum install git</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p>$: Linux的命令提示符表示当前家目录</p>
+</blockquote>
+<h3 id="Git-服务搭建模拟日常工作场景"><a href="#Git-服务搭建模拟日常工作场景" class="headerlink" title="Git 服务搭建模拟日常工作场景"></a>Git 服务搭建模拟日常工作场景</h3><ol>
+<li>本地创建远程仓库</li>
+</ol>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line">$ <span class="comment"># 新建git用户</span></span><br><span class="line">$ sudo useradd -r -m -d /home/repo git</span><br><span class="line">$</span><br><span class="line">$ <span class="comment"># 切换到git用户</span></span><br><span class="line">$ sudo su - git</span><br><span class="line">$</span><br><span class="line">$ <span class="comment"># 生成公钥私钥</span></span><br><span class="line">$ ssh-keygen  <span class="comment"># 回车三次生成公钥私钥</span></span><br><span class="line">$</span><br><span class="line">$ <span class="comment"># 初始化git仓库</span></span><br><span class="line">$ mkdir git-remote-repo</span><br><span class="line">$ <span class="built_in">cd</span> git-remote-repo </span><br><span class="line">$ <span class="built_in">echo</span> <span class="string">"Hello Git"</span> &gt; README</span><br><span class="line">$ git init .</span><br><span class="line">$ git add *</span><br><span class="line">$ git commit -m <span class="string">"init git remote repo"</span></span><br><span class="line">$ <span class="built_in">cd</span> ~</span><br><span class="line">$ git <span class="built_in">clone</span> --bare --shared git-remote-repo git-remote-repo.git</span><br><span class="line">$</span><br><span class="line">$ git config user.email <span class="string">"you@example.com"</span></span><br><span class="line">$ git config user.name <span class="string">"git"</span></span><br><span class="line">$</span><br><span class="line">$ <span class="built_in">exit</span></span><br></pre></td></tr></table></figure>
+
+<ol start="2">
+<li>创建RD1账号模拟工作中的开发人员</li>
+</ol>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">$ sudo useradd -m rd1</span><br><span class="line">$ sudo su - rd1</span><br><span class="line">$ ssh-keygen  <span class="comment"># 回车三次生成公钥私钥</span></span><br><span class="line">$</span><br><span class="line">$ <span class="built_in">exit</span></span><br></pre></td></tr></table></figure>
+
+<ol start="4">
+<li>添加RD1的公钥到git用户的authorized_keys实现免密码拉取代码库</li>
+</ol>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">$ cat /home/rd1/.ssh/id_rsa_rd1.pub &gt;&gt; /home/repo/.ssh/authorized_keys</span><br><span class="line">$ sudo su - git</span><br><span class="line">$ mkdir .ssh &amp;&amp; chmod 0700 .ssh</span><br><span class="line">$ chmod 0600 .ssh/authorized_keys</span><br></pre></td></tr></table></figure>
+
+<ol start="5">
+<li>切换账号到rd1，模仿开发人员同步代码</li>
+</ol>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">$ sudo su - rd1</span><br><span class="line">$ git <span class="built_in">clone</span> git@localhost:/home/repo/git-remote-repo.git </span><br><span class="line">$ ls</span><br><span class="line">git-remote-repo</span><br><span class="line">$ git config user.name <span class="string">"rd1"</span></span><br><span class="line">$ git config user.email <span class="string">"rd1@example.com"</span></span><br><span class="line">$</span><br><span class="line">$ <span class="built_in">exit</span></span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p>Linux知识点:</p>
+<ol>
+<li>mkdir: 创建目录   </li>
+<li>cd: 切换目录到指定的目录</li>
+<li>sudo: 以root的身份执行操作</li>
+<li>chmod: 修改目录/文件的权限</li>
+<li>useradd -r选项: 创建系统账号</li>
+</ol>
+</blockquote>
+<hr>
+<blockquote>
+<p>Git知识点:</p>
+<ol>
+<li>git init:  初始化git仓库</li>
+<li>git add:   将工作目录的内容加入暂存区</li>
+<li>git commit: 将暂存区的内容加入到Git仓库</li>
+<li>git clone –bare –shared: 把现有的仓库导出为裸仓库，即：一个不包含当前工作目录的仓库, 导出的裸仓库只包含原仓库的历史数据，不包含元仓库的新增数据。</li>
+</ol>
+</blockquote>
+<h3 id="Git-场景及操作"><a href="#Git-场景及操作" class="headerlink" title="Git 场景及操作"></a>Git 场景及操作</h3><blockquote>
+<p>假设当前用户为rd1, 其他的同事如rd2 操作类似</p>
+</blockquote>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ sudo su - rd1</span><br></pre></td></tr></table></figure>
+
+<h4 id="场景：-开发新的功能需求"><a href="#场景：-开发新的功能需求" class="headerlink" title="场景： 开发新的功能需求"></a>场景： 开发新的功能需求</h4><p>一般情况下，操作步骤：</p>
+<ol>
+<li><p>创建新的功能（feature）分支</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">$ <span class="built_in">cd</span> git-remote-repo</span><br><span class="line">$ <span class="comment">#创建本地分支和远程分支</span></span><br><span class="line">$ git checkout -b feature-01 <span class="comment"># 新建feature-01分支，并切换到feature-01分支</span></span><br><span class="line">Switched to a new branch <span class="string">'feature'</span></span><br><span class="line">$</span><br><span class="line">$ 1. 如果远程feature分支不存在</span><br><span class="line">$ git push origin feature-01 <span class="comment"># 将本地feature分支同步到远程仓库，并创建远程分支</span></span><br><span class="line">$</span><br><span class="line">$ 2. 如果远程feature分支存在</span><br><span class="line">$ git checkout -b feature-01 <span class="comment"># 新建feature-01分支，并切换到feature-01分支</span></span><br><span class="line">$ git branch -u origin/feature-01  <span class="comment"># 设置本地分支跟踪远程分支</span></span><br><span class="line">$ <span class="comment">#以上两条命令可以合并为一条：</span></span><br><span class="line">$ <span class="comment"># git checkout -b feature-01 origin/feature-01</span></span><br></pre></td></tr></table></figure>
+</li>
+<li><p>在功能分支添加功能代码</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">$ vim SomeCodeFile</span><br><span class="line">$ git add SomeCodeFile <span class="comment"># 将工作目录的内容添加到暂存区</span></span><br><span class="line">$ git commit -m <span class="string">"commit info"</span> <span class="comment"># </span></span><br><span class="line">$ <span class="comment"># 注意：</span></span><br><span class="line">$ <span class="comment"># 1. 在每次执行git push之前，需要同步远程分支并合并到本地分支，防止本地与远程不一致</span></span><br><span class="line">$ git fetch</span><br><span class="line">$ git merge <span class="comment"># 如果有冲突要先解决冲突</span></span><br><span class="line">$ git push origin feature-01 <span class="comment"># push feature-01分支到远程仓库</span></span><br><span class="line">$</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p>注：<br>如果远程分支名称与本地分支新建分支名称不一致，该怎么处理？</p>
+<ol>
+<li>git branch -u local-feature-name（本地分支名) origin/remote-feature-name (远程分支名)</li>
+<li>git push origin  remote-feature-name:local-feature-name</li>
+</ol>
+</blockquote>
+</li>
+<li><p>功能开发完成后，合并功能分支到发布分支，可能是release分支或者其他分支</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">$ <span class="comment"># 切换到release分支，假设release分支名release</span></span><br><span class="line">$ git checkout -b release origin/release</span><br><span class="line">$ git merge feature <span class="comment"># 合并feature分支</span></span><br><span class="line">$ git push</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>发布release分支到生产环境，并将release分支合并到master</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">$ git checkout master</span><br><span class="line">$ git merge release</span><br><span class="line">$ git push</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>删除本地分支及远程分支</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">$ git push origin --delete feature</span><br><span class="line">$ git checkout master</span><br><span class="line">$ git branch -d feature</span><br></pre></td></tr></table></figure>
+
+</li>
+</ol>
+<h4 id="常见场景及问题："><a href="#常见场景及问题：" class="headerlink" title="常见场景及问题："></a>常见场景及问题：</h4><p><strong>Q</strong>: 当前所在分支有尚未提交的代码，如果现在需要切换到其他分支修改BUG， 如果直接checkout到其他分支，当前分支的变更也会带到其他分支，那么在当前分支不提交的情况下该如何保持当前分支的修改，并干净的切换到其他分支. 干净：不包含当前分支未提交的修改？<br><strong>A</strong>: git stash push<br><strong>U</strong>: git stash push 命令保存当前修改的文件和已加入索引的文件，注意： 新增的文件是不会被保存的，因此执行此命令的前注意使用git add命令.<br>   git stash apply 命令应用保存的工作内容到当前所在的分支，注意： 应用的过程中可能出现冲突，需要手动解决.<br>   git stash branchname [stashindex] 命令会创建新的分支基于stash保存时的分支</p>
+<hr>
+<p><strong>Q</strong>: 提交完了才发现漏掉了几个文件没有添加，或者提交信息写错了，或者想在自己的分支上只有一个提交记录，该如何处理呢？<br><strong>A</strong>: git commit –amend<br><strong>U</strong>: git commit –amend 命令会将暂存区中的文件提交。 如果自上次提交以来你还未做任何修改（例如，在上次提交后马上执行了此命令），那么快照会保持不变，而你所修改的只是提交信息，最终你只会有一个提交 - 第二次提交将代替第一次提交的结果。</p>
+<hr>
+<p><strong>Q</strong>: 如何清理工作目录<br><strong>A</strong>: git clean<br><strong>U</strong>: git clean 命令 去除冗余文件或者清理工作目录。<br>   -d 选项移除工作目录中所有未追踪的文件以及空的子目录。<br>   -f 选项意味着 强制 或 “确定移除”。<br>   -n 选项不会执行清理工作目录，只是将clean将要做什么<br><strong>N</strong>: 这个命令非常适合我们清理编译后的文件</p>
+<hr>
+<p><strong>Q</strong>: 提交到索引的文件如何撤销<br><strong>A</strong>: git reset HEAD filename</p>
+<hr>
+<p><strong>Q</strong>: 修改的文件如何恢复到初始状态<br><strong>A</strong>: git checkout – filename</p>
+<hr>
+<p><strong>Q</strong>: 在工作中常规情况下，master分支在我们功能分支开发过程中会出现master分支修改BUG造成提交提前我们的功能分支，在这种情况下，往往不允许我们直接将master分支合并到我们的功能分支，那如果想把master分支修复的一些代码合并到我们的功能分支上呢？<br><strong>A</strong>: git rebase master [current branch]<br><strong>U</strong>: git rebase 命令将提交到某一分支上的所有修改都移至另一分支上，就好像“重新播放”一样。<br>   它的原理是首先找到这两个分支（即当前分支 experiment、变基操作的目标基底分支 master）的最近共同祖先C2，<br>   然后对比当前分支相对于该祖先的历次提交，提取相应的修改并存为临时文件，然后将当前分支指向目标基底 C3, 最后以此将之前另存为临时文件的修改依序应用</p>
+<h1 id="Git-基本原理"><a href="#Git-基本原理" class="headerlink" title="Git 基本原理"></a>Git 基本原理</h1><p>在Git 中工作的基本流程：</p>
+<ul>
+<li>在工作目录中修改文件。</li>
+<li>暂存文件，将文件的快照放入暂存区域。</li>
+<li>提交更新，找到暂存区域的文件，将快照永久性存储到 Git 仓库目录。<br>在流程流转的过程中文件有三种状态：</li>
+</ul>
+<ol>
+<li>已提交（committed）: 已提交表示数据已经安全的保存在本地数据库中</li>
+<li>已修改（modified）: 已修改表示修改了文件，但还没保存到数据库中</li>
+<li>已暂存（staged）: 已暂存表示对一个已修改文件的当前版本做了标记，使之包含在下次提交的快照中。<br>其中Git中引入了三个工作区域的概念：</li>
+<li>Git 仓库目录: Git 用来保存项目的元数据和对象数据库的地方。 这是 Git 中最重要的部分，从其它计算机克隆仓库时，拷贝的就是这里的数据。</li>
+<li>工作目录: 对项目的某个版本独立提取出来的内容。 这些从 Git 仓库的压缩数据库中提取出来的文件，放在磁盘上供你使用或修改。</li>
+<li>暂存区域: 一个文件，保存了下次将提交的文件列表信息，一般在 Git 仓库目录中。 有时候也被称作`‘索引’’，不过一般说法还是叫暂存区域。</li>
+</ol>
+
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2019/06/05/init/" rel="next" title="Hexo初始化">
+                <i class="fa fa-chevron-left"></i> Hexo初始化
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+  </div>
+
+
+          </div>
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <p class="site-author-name" itemprop="name">孙艺豪</p>
+              <div class="site-description motion-element" itemprop="description">千举万变，其道一也。不离于宗，谓之天人。</div>
+          </div>
+
+          
+            <nav class="site-state motion-element">
+              
+                <div class="site-state-item site-state-posts">
+                
+                  <a href="/archives/">
+                
+                    <span class="site-state-item-count">2</span>
+                    <span class="site-state-item-name">日志</span>
+                  </a>
+                </div>
+              
+
+              
+
+              
+            </nav>
+          
+
+          
+
+          
+
+          
+
+          
+
+          
+          
+
+          
+            
+          
+          
+
+        </div>
+      </div>
+
+      
+      <!--noindex-->
+        <div class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+            
+            
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#Git-命令安装"><span class="nav-number">1.</span> <span class="nav-text">Git 命令安装</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Git-服务搭建模拟日常工作场景"><span class="nav-number">2.</span> <span class="nav-text">Git 服务搭建模拟日常工作场景</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Git-场景及操作"><span class="nav-number">3.</span> <span class="nav-text">Git 场景及操作</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#场景：-开发新的功能需求"><span class="nav-number">3.1.</span> <span class="nav-text">场景： 开发新的功能需求</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#常见场景及问题："><span class="nav-number">3.2.</span> <span class="nav-text">常见场景及问题：</span></a></li></ol></li></ol><li class="nav-item nav-level-1"><a class="nav-link" href="#Git-基本原理"><span class="nav-number"></span> <span class="nav-text">Git 基本原理</span></a></li></div>
+            
+
+          </div>
+        </div>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+  
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2019</span>
+  <span class="with-love" id="animate">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">孙艺豪</span>
+
+  
+
+  
+</div>
+
+
+  <div class="powered-by">由 <a href="https://hexo.io" class="theme-link" rel="noopener" target="_blank">Hexo</a> 强力驱动</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 – <a href="https://theme-next.org" class="theme-link" rel="noopener" target="_blank">NexT.Muse</a></div>
+
+
+
+
+        
+
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+    
+
+    
+  </div>
+
+  
+
+<script>
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  <script src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+
+  
+
+
+  <script src="/js/utils.js?v=7.1.2"></script>
+
+  <script src="/js/motion.js?v=7.1.2"></script>
+
+
+
+  
+  
+
+
+  <script src="/js/schemes/muse.js?v=7.1.2"></script>
+
+
+
+  
+  <script src="/js/scrollspy.js?v=7.1.2"></script>
+<script src="/js/post-details.js?v=7.1.2"></script>
+
+
+
+  
+
+
+  <script src="/js/next-boot.js?v=7.1.2"></script>
+
+
+  
+
+  
+
+  
+
+  
+
+
+  
+
+
+  
+
+
+
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>
